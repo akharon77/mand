@@ -6,8 +6,7 @@ const float N_MAX = 255;
 
 struct MandConfig
 {
-    float *x_arr;
-    float *y_arr;
+    int32_t *cnt_arr;
 
     int32_t base_x;
     int32_t base_y;
