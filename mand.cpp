@@ -33,7 +33,7 @@ void CalculateMandelbrotNoOptimizations(MandConfig *config)
     int32_t width  = config->width,
             height = config->heigh;
 
-    float r_max_quad = config->r_max * config->r_max;
+    float r_max_sqr = config->r_max * config->r_max;
 
     float y0 = base_y;
 
@@ -50,17 +50,19 @@ void CalculateMandelbrotNoOptimizations(MandConfig *config)
 
             while (n < N_MAX)
             {
-                float x1_sqr   = x1 * x1;
-                float y1_sqr   = y1 * y1;
+                float x1_sqr   =     x1 * x1;
+                float y1_sqr   =     y1 * y1;
+
+                float dist_sqr = x1_sqr + y1 * y1;
+
+                if (dist_sqr > r_max_sqr)
+                    break;
+
                 float dbl_x1y1 = 2 * x1 * y1;
 
                 x1 = x1_sqr - y1_sqr + x0;
                 y1 = dbl_x1y1 + y0;
 
-                float dist_sqr = x1 * x1 + y1 * y1;
-
-                if (dist_sqr > r_max_quad)
-                    break;
                 ++n;
             }
 
@@ -86,7 +88,9 @@ void CalculateMandelbrotAVX512(MandConfig *config)
     int32_t width  = config->width,
             height = config->heigh;
 
-    float r_max_quad = config->r_max * config->r_max;
+    // float r_max_sqr = config->r_max * config->r_max;
+    __m512 r_max     = _mm512_set1_ps(config->r_max);
+    __m512 r_max_sqr = _mm512_mul_ps(r_max, r_max);
 
     __m512 it16 = _mm512_set_ps(15, 14, 13, 12, 11, 10,  9,  8,
                                  7,  6,  5,  4,  3,  2,  1,  0);
@@ -128,8 +132,12 @@ void CalculateMandelbrotAVX512(MandConfig *config)
                 __m512 dist_sqr = _mm512_add_ps(x1_sqr, y1_sqr);
 
                 // CHECK AND BREAK
-                if (dist_sqr > r_max_quad)
+                __mmask16 mask  = _mm512_cmp_ps_mask(dist_sqr, r_max_sqr, _CMP_LT_OS);
+                if (!mask)
                     break;
+
+                __m512i d_cnt = _mm512_broadcastmw_epi32(mask);
+                        n     = _mm512_add_ps(n, d_cnt);
 
                 // dbl_x1y1 = 2 * x1 * y1;
                 __m512 x1y1     = _mm512_mul_ps(x1,   y1  );
@@ -140,10 +148,10 @@ void CalculateMandelbrotAVX512(MandConfig *config)
 
                 // y1 = dbl_x1y1 + y0;
                 y1 = _mm512_add_ps(dbl_x1y1,                      y0);
-
             }
 
-            cnt_arr[yi * width + xi] = n;
+            // cnt_arr[yi * width + xi] = n;
+            _mm512_storeu_epi32(cnt_arr + yi * width + xi, n);
         }
     }
 }
