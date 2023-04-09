@@ -2,33 +2,36 @@
 
 #include "mand.h"
 
-void TransformCoordScale(MandConfig *config, float *x, float *y)
+void TransfCoordScale(const MandConfig *config, float *x, float *y)
 {
     *x = *x / config->width  * 2 * X_TRANSF_RAD;
     *y = *y / config->height * 2 * Y_TRANSF_RAD;
 }
 
-void TransfromCoord(MandConfig *config, float *x, float *y)
+void TransfCoord(const MandConfig *config, float *x, float *y)
 {
-    TransformCoordScale(config, x, y);
+    TransfCoordScale(config, x, y);
 
     *x = *x - config->x_transf_rad;
     *y = config->y_transf_rad - *y;
+
+    *x *= config->scale;
+    *y *= config->scale;
 }
 
-void CalculateMandelbrotNoOptimizations(MandConfig *config)
+void CalcMandNoOpts(MandConfig *config)
 {
     int32_t *cnt_arr = config->cnt_arr;
 
     float base_x = config->base_x,
           base_y = config->base_y;
 
-    TransfromCoord(config, &base_x, &base_y);
+    TransfCoord(config, &base_x, &base_y);
 
     float delta_x = 1,
           delta_y = 1;
 
-    TransformCoordScale(config, &delta_x, &delta_y);
+    TransfCoordScale(config, &delta_x, &delta_y);
 
     int32_t width  = config->width,
             height = config->heigh;
@@ -50,18 +53,18 @@ void CalculateMandelbrotNoOptimizations(MandConfig *config)
 
             while (n < N_MAX)
             {
-                float x1_sqr   =     x1 * x1;
-                float y1_sqr   =     y1 * y1;
+                float x1_sqr   =          x1 * x1;
+                float y1_sqr   =          y1 * y1;
 
                 float dist_sqr = x1_sqr + y1 * y1;
 
-                if (dist_sqr > r_max_sqr)
+                if (dist_sqr > r_max_sqr + EPS)
                     break;
 
-                float dbl_x1y1 = 2 * x1 * y1;
+                float dbl_x1y1 =      2 * x1 * y1;
 
                 x1 = x1_sqr - y1_sqr + x0;
-                y1 = dbl_x1y1 + y0;
+                y1 = dbl_x1y1        + y0;
 
                 ++n;
             }
@@ -71,7 +74,7 @@ void CalculateMandelbrotNoOptimizations(MandConfig *config)
     }
 }
 
-void CalculateMandelbrotAVX512(MandConfig *config)
+void CalcMandAVX512(MandConfig *config)
 {
     int32_t *cnt_arr = config->cnt_arr;
 
@@ -91,14 +94,15 @@ void CalculateMandelbrotAVX512(MandConfig *config)
     // float r_max_sqr = config->r_max * config->r_max;
     __m512 r_max     = _mm512_set1_ps(config->r_max);
     __m512 r_max_sqr = _mm512_mul_ps(r_max, r_max);
+           r_max_sqr = _mm512_sub_ps(r_max_sqr, __mm512_set1_ps(EPS));
 
     __m512 it16 = _mm512_set_ps(15, 14, 13, 12, 11, 10,  9,  8,
                                  7,  6,  5,  4,  3,  2,  1,  0);
 
-    __m512 delta_x_it16 = _mm512_mul_ps(__m512_set1_ps(delta_x), it16);
-    __m512 delta_y_unif =               __m512_set1_ps(delta_y)       ;
-    __m512 delta_x_unif = _mm512_mul_ps(__m512_set1_ps(delta_x),
-                                        __m512_set1_ps(16));
+    __m512 delta_x_it16 = _mm512_mul_ps(_mm512_set1_ps(delta_x), it16);
+    __m512 delta_y_unif =               _mm512_set1_ps(delta_y)       ;
+    __m512 delta_x_unif = _mm512_mul_ps(_mm512_set1_ps(delta_x),
+                                        _mm512_set1_ps(16));
 
     // float y0 = base_y;
     __m512 y0 = _mm512_set1_ps(base_y);
@@ -155,3 +159,23 @@ void CalculateMandelbrotAVX512(MandConfig *config)
         }
     }
 }
+
+void GetMandImage(const MandConfig *config, sf::Image *img)
+{
+    for (int32_t yi = 0; yi < height; ++yi, y0 += delta_y)
+    {
+        for (int32_t xi = 0; xi < width; ++xi, x0 += delta_x)
+        {
+            int32_t pos = yi * width + xi;
+            int32_t cnt = config->cnt_arr[pos];
+
+            if (cnt == N_MAX)
+                img->setPixel(xi, yi, sf::Color::Black);
+            else
+                img->setPixel(xi, yi, sf::Color((uint8_t) 3 * cnt,
+                                                (uint8_t) 4 * cnt,
+                                                (uint8_t) 5 * cnt);
+        }
+    }
+}
+
