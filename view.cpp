@@ -45,6 +45,18 @@ void MandRun(MandConfig *conf)
             if (event.type == sf::Event::Closed)
                 window.close();
 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+            conf->base_y -= STEP_Y;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+            conf->base_y += STEP_Y;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+            conf->base_x -= STEP_X;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+            conf->base_x += STEP_X;
+
         MandCalcAVX512(conf);
         // MandCalcNoOpts(conf);
         MandGetImage(conf, &img);

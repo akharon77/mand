@@ -9,12 +9,12 @@ DEP  = $(patsubst %.cpp,%.d,$(SRC))
 all: $(BIN)
 
 $(BIN): $(OBJ)
-	$(CXX) $(CXX_FLAGS) $^ -o $@
+	$(CXX) $^ -o $@ $(CXX_FLAGS)
 
 -include $(DEP)
 
 %.o: %.cpp
-	$(CXX) $(CXX_FLAGS) -MMD -c $< -o $@
+	$(CXX) -MMD -c $< -o $@ $(CXX_FLAGS)
 
 clean:
 	rm -rf $(DEP) $(OBJ) $(BIN)

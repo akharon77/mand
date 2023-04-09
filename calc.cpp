@@ -12,8 +12,13 @@ void MandTransfCoord(const MandConfig *conf, float *x, float *y)
 {
     MandTransfCoordScale(conf, x, y);
 
-    *x = *x - conf->x_transf_rad;
-    *y = conf->y_transf_rad - *y;
+    float base_x = conf->base_x,
+          base_y = conf->base_y;
+
+    MandTransfCoordScale(conf, &base_x, &base_y);
+
+    *x = base_x + *x - conf->x_transf_rad;
+    *y = base_y + conf->y_transf_rad - *y;
 
     *x *= conf->scale;
     *y *= conf->scale;
@@ -26,7 +31,7 @@ void MandCalcNoOpts(MandConfig *conf)
     float base_x = conf->base_x,
           base_y = conf->base_y;
 
-    MandTransfCoord(conf, &base_x, &base_y);
+    MandTransfCoordScale(conf, &base_x, &base_y);
 
     float delta_x = 1,
           delta_y = 1;
@@ -81,7 +86,7 @@ void MandCalcAVX512(MandConfig *conf)
     float base_x = conf->base_x,
           base_y = conf->base_y;
 
-    MandTransfCoord(conf, &base_x, &base_y);
+    MandTransfCoordScale(conf, &base_x, &base_y);
 
     float delta_x = 1,
           delta_y = 1;
