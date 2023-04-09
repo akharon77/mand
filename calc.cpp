@@ -92,8 +92,7 @@ void MandCalcAVX512(MandConfig *conf)
             height = conf->height;
 
     // float r_max_sqr = config->r_max * config->r_max;
-    __m512 r_max     = _mm512_set1_ps(conf->r_max);
-    __m512 r_max_sqr = _mm512_mul_ps(r_max, r_max);
+    __m512 r_max_sqr = _mm512_set1_ps(conf->r_max * conf->r_max);
            r_max_sqr = _mm512_sub_ps(r_max_sqr, _mm512_set1_ps(EPS));
 
     __m512 it16 = _mm512_set_ps(15, 14, 13, 12, 11, 10,  9,  8,
@@ -116,7 +115,7 @@ void MandCalcAVX512(MandConfig *conf)
         {
 
             // int32_t n = 0;
-            __m512i n = _mm512_set1_epi32(0);
+            __m512i n = _mm512_set1_epi32(N_MAX);
 
             // float x1 = x0,
             //       y1 = y0;
@@ -140,7 +139,7 @@ void MandCalcAVX512(MandConfig *conf)
                 if (!mask)
                     break;
 
-                __m512i d_cnt = _mm512_broadcastmw_epi32(mask);
+                __m512i d_cnt = _mm512_movm_epi32(mask);
                         n     = _mm512_add_epi32(n, d_cnt);
 
                 // dbl_x1y1 = 2 * x1 * y1;
@@ -155,7 +154,10 @@ void MandCalcAVX512(MandConfig *conf)
             }
 
             // cnt_arr[yi * width + xi] = n;
-            _mm512_storeu_si512(cnt_arr + yi * width + xi, n);
+            __m512i store_cnt = _mm512_set1_epi32(N_MAX);
+                    store_cnt = _mm512_sub_epi32(store_cnt, n);
+
+            _mm512_storeu_si512(cnt_arr + yi * width + xi, store_cnt);
         }
     }
 }

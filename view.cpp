@@ -45,7 +45,8 @@ void MandRun(MandConfig *conf)
             if (event.type == sf::Event::Closed)
                 window.close();
 
-        MandCalcNoOpts(conf);
+        MandCalcAVX512(conf);
+        // MandCalcNoOpts(conf);
         MandGetImage(conf, &img);
 
         texture.loadFromImage(img);
