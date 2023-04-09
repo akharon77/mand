@@ -1,8 +1,19 @@
 #ifndef MAND_H
 #define MAND_H
 
+#include <SFML/Graphics.hpp>
+
 const float EPS   = 1e-6;
 const float N_MAX = 255;
+
+const int32_t DEF_BASE_X     = 0;
+const int32_t DEF_BASE_Y     = 0;
+
+const float   DEF_SCALE      = 1;
+const float   DEF_TRANSF_RAD = 2.5;
+const float   DEF_R_NAX      = 10;
+
+const uint32_t MAGIC = 0xDEADBEEF;
 
 struct MandConfig
 {
@@ -21,12 +32,12 @@ struct MandConfig
     float r_max;
 };
 
-void TransfCoordScale (const MandConfig *config, float *x, float *y);
-void TransfCoord      (const MandConfig *config, float *x, float *y);
+void MandTransfCoordScale (const MandConfig *config, float *x, float *y);
+void MandTransfCoord      (const MandConfig *config, float *x, float *y);
 
-void CalcMandNoOpts   (MandConfig *config);
-void CalcMandAVX512   (MandConfig *config);
+void MandCalcNoOpts       (MandConfig *config);
+void MandCalcAVX512       (MandConfig *config);
 
-void GetMandImage     (const MandConfig *config, sf::Image *img);
+void MandGetImage         (const MandConfig *config, sf::Image *img);
 
 #endif  // MAND_H

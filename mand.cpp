@@ -2,13 +2,13 @@
 
 #include "mand.h"
 
-void TransfCoordScale(const MandConfig *config, float *x, float *y)
+void MandTransfCoordScale(const MandConfig *config, float *x, float *y)
 {
     *x = *x / config->width  * 2 * X_TRANSF_RAD;
     *y = *y / config->height * 2 * Y_TRANSF_RAD;
 }
 
-void TransfCoord(const MandConfig *config, float *x, float *y)
+void MandTransfCoord(const MandConfig *config, float *x, float *y)
 {
     TransfCoordScale(config, x, y);
 
@@ -19,7 +19,7 @@ void TransfCoord(const MandConfig *config, float *x, float *y)
     *y *= config->scale;
 }
 
-void CalcMandNoOpts(MandConfig *config)
+void MandCalcNoOpts(MandConfig *config)
 {
     int32_t *cnt_arr = config->cnt_arr;
 
@@ -74,7 +74,7 @@ void CalcMandNoOpts(MandConfig *config)
     }
 }
 
-void CalcMandAVX512(MandConfig *config)
+void MandCalcAVX512(MandConfig *config)
 {
     int32_t *cnt_arr = config->cnt_arr;
 
@@ -160,7 +160,7 @@ void CalcMandAVX512(MandConfig *config)
     }
 }
 
-void GetMandImage(const MandConfig *config, sf::Image *img)
+void MandGetImage(const MandConfig *config, sf::Image *img)
 {
     for (int32_t yi = 0; yi < height; ++yi, y0 += delta_y)
     {
@@ -172,10 +172,35 @@ void GetMandImage(const MandConfig *config, sf::Image *img)
             if (cnt == N_MAX)
                 img->setPixel(xi, yi, sf::Color::Black);
             else
-                img->setPixel(xi, yi, sf::Color((uint8_t) 3 * cnt,
-                                                (uint8_t) 4 * cnt,
-                                                (uint8_t) 5 * cnt);
+                img->setPixel(xi, yi, sf::Color((uint8_t) 3 * cnt + 10,
+                                                (uint8_t) 4 * cnt + 20,
+                                                (uint8_t) 5 * cnt + 30);
         }
     }
+}
+
+void MandConfigCtor(MandConfig *conf, int32_t width, int32_t height)
+{
+    conf->cnt_arr      = calloc(width * height, sizeof(int32_t));
+
+    conf->base_x       = DEF_BASE_X;
+    conf->base_y       = DEF_BASE_Y;
+
+    conf->width        = width;
+    conf->height       = height;
+
+    conf->scale        = DEF_SCALE;
+    conf->x_transf_rad = DEF_TRANSF_RAD;
+    conf->y_transf_rad = DEF_TRANSF_RAD;
+
+    conf->r_max        = DEF_R_MAX;
+}
+
+void MandConfigDtor(MandConfig *conf)
+{
+    free(conf->cnt_arr);
+
+    for (int32_t i = 0, uint32_t *ptr = conf; i < sizeof(MandConfig) / sizeof(uint32_t); ++i, ++ptr)
+        *ptr = MAGIC;
 }
 
