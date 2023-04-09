@@ -1,9 +1,10 @@
 #include "mand.h"
+#include "view.h"
 
 int main()
 {
     MandConfig conf = {};
-    MandConfigCtor(&conf);
+    MandConfigCtor(&conf, WIDTH, HEIGHT);
 
     MandRun(&conf);
 
