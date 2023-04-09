@@ -1,12 +1,14 @@
 #ifndef MAND_H
 #define MAND_H
 
+#include <stdint.h>
+
 const int32_t DEF_BASE_X     = 0;
 const int32_t DEF_BASE_Y     = 0;
 
 const float   DEF_SCALE      = 1;
 const float   DEF_TRANSF_RAD = 2.5;
-const float   DEF_R_NAX      = 10;
+const float   DEF_R_MAX      = 10;
 
 const uint32_t MAGIC = 0xDEADBEEF;
 

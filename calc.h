@@ -1,6 +1,10 @@
 #ifndef CALC_H
 #define CALC_H
 
+#include <stdint.h>
+
+#include "mand.h"
+
 const float EPS   = 1e-6;
 const float N_MAX = 255;
 

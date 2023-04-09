@@ -1,4 +1,3 @@
-#include "mand.h"
 #include "view.h"
 
 int main()
