@@ -8,22 +8,6 @@ void MandTransfCoordScale(const MandConfig *conf, float *x, float *y)
     *y = *y / conf->height * 2 * conf->y_transf_rad;
 }
 
-void MandTransfCoord(const MandConfig *conf, float *x, float *y)
-{
-    MandTransfCoordScale(conf, x, y);
-
-    float base_x = conf->base_x,
-          base_y = conf->base_y;
-
-    MandTransfCoordScale(conf, &base_x, &base_y);
-
-    *x = base_x + *x - conf->x_transf_rad;
-    *y = base_y + conf->y_transf_rad - *y;
-
-    *x *= conf->scale;
-    *y *= conf->scale;
-}
-
 void MandCalcNoOpts(MandConfig *conf)
 {
     int32_t *cnt_arr = conf->cnt_arr;

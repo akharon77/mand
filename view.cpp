@@ -42,6 +42,9 @@ void MandRun(MandConfig *conf)
 
     float vel_x = 0,
           vel_y = 0;
+
+    float acc_scale = 0,
+          vel_scale = 1;
     
     while (window.isOpen())
     {
@@ -52,19 +55,36 @@ void MandRun(MandConfig *conf)
                 window.close();
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-            acc_y = -DEF_ACC;
+            acc_y = -ACC_COORD;
             // conf->base_y -= STEP_Y;
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-            acc_y = DEF_ACC;
+            acc_y = ACC_COORD;
             // conf->base_y += STEP_Y;
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-            acc_x = -DEF_ACC;
+            acc_x = -ACC_COORD;
             // conf->base_x -= STEP_X;
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            acc_x = DEF_ACC;
+            acc_x = ACC_COORD;
             // conf->base_x += STEP_X;
         else
             acc_x = acc_y = 0;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add))
+            acc_scale = ACC_SCALE;
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract))
+            acc_scale = -ACC_SCALE;
+        else
+            acc_scale = 0;
+
+        vel_scale += acc_scale;
+
+        conf->scale *= vel_scale;
+        conf->base_x += conf->width  / 2. * conf->scale * (1 - vel_scale);
+        conf->base_y += conf->height / 2. * conf->scale * (1 - vel_scale);
+
+        --vel_scale;
+        vel_scale *= K_DEC;
+        ++vel_scale;
 
         acc_x *= conf->scale;
         acc_y *= conf->scale;
