@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-const int32_t DEF_BASE_X     = -350;
-const int32_t DEF_BASE_Y     = -250;
+const int32_t DEF_BASE_X     = -100;
+const int32_t DEF_BASE_Y     = 800;
 
 const float   DEF_SCALE      = 0.6;
 const float   DEF_TRANSF_RAD = 2.5;

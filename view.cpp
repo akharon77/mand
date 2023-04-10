@@ -54,49 +54,52 @@ void MandRun(MandConfig *conf)
             if (event.type == sf::Event::Closed)
                 window.close();
 
+        acc_x = acc_y = 0;
+
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-            acc_y = -ACC_COORD;
-            // conf->base_y -= STEP_Y;
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
             acc_y = ACC_COORD;
+            // conf->base_y -= STEP_Y;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+            acc_y = -ACC_COORD;
             // conf->base_y += STEP_Y;
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
             acc_x = -ACC_COORD;
             // conf->base_x -= STEP_X;
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
             acc_x = ACC_COORD;
             // conf->base_x += STEP_X;
-        else
-            acc_x = acc_y = 0;
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add))
-            acc_scale = ACC_SCALE;
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract))
-            acc_scale = -ACC_SCALE;
-        else
-            acc_scale = 0;
-
-        vel_scale += acc_scale;
-
-        conf->scale *= vel_scale;
-        conf->base_x += conf->width  / 2. * conf->scale * (1 - vel_scale);
-        conf->base_y += conf->height / 2. * conf->scale * (1 - vel_scale);
-
-        --vel_scale;
-        vel_scale *= K_DEC;
-        ++vel_scale;
-
-        acc_x *= conf->scale;
-        acc_y *= conf->scale;
 
         vel_x += acc_x;
         vel_y += acc_y;
 
+        // MandTransfCoordScale(conf, &vel_x, &vel_y);
+
         conf->base_x += vel_x;
         conf->base_y += vel_y;
 
-        vel_x *= K_DEC;
-        vel_y *= K_DEC;
+        vel_x *= K_DEC_VEL;
+        vel_y *= K_DEC_VEL;
+
+        acc_scale = 0;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add))
+            acc_scale = ACC_SCALE;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract))
+            acc_scale = -ACC_SCALE;
+
+        vel_scale += acc_scale;
+
+        conf->scale *= vel_scale;
+
+        --vel_scale;
+        vel_scale *= K_DEC_SCALE;
+        ++vel_scale;
+
+        // dprintf(2, "base_x = %d, base_y = %d, scale = %f\n", conf->base_x, conf->base_y, conf->scale);
 
         MandCalcAVX512(conf);
         // MandCalcNoOpts(conf);
