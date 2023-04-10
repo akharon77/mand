@@ -33,8 +33,8 @@ void MandCalcNoOpts(MandConfig *conf)
 
     MandTransfCoordScale(conf, &base_x, &base_y);
 
-    float delta_x = 1,
-          delta_y = 1;
+    float delta_x = conf->scale,
+          delta_y = conf->scale;
 
     MandTransfCoordScale(conf, &delta_x, &delta_y);
 
@@ -88,8 +88,8 @@ void MandCalcAVX512(MandConfig *conf)
 
     MandTransfCoordScale(conf, &base_x, &base_y);
 
-    float delta_x = 1,
-          delta_y = 1;
+    float delta_x = conf->scale,
+          delta_y = conf->scale;
 
     MandTransfCoordScale(conf, &delta_x, &delta_y);
 

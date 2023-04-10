@@ -36,6 +36,12 @@ void MandRun(MandConfig *conf)
 
     sf::Texture texture = {};
     sf::Sprite  sprite  = {};
+
+    float acc_x = 0,
+          acc_y = 0;
+
+    float vel_x = 0,
+          vel_y = 0;
     
     while (window.isOpen())
     {
@@ -46,16 +52,31 @@ void MandRun(MandConfig *conf)
                 window.close();
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-            conf->base_y -= STEP_Y;
+            acc_y = -DEF_ACC;
+            // conf->base_y -= STEP_Y;
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+            acc_y = DEF_ACC;
+            // conf->base_y += STEP_Y;
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+            acc_x = -DEF_ACC;
+            // conf->base_x -= STEP_X;
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+            acc_x = DEF_ACC;
+            // conf->base_x += STEP_X;
+        else
+            acc_x = acc_y = 0;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-            conf->base_y += STEP_Y;
+        acc_x *= conf->scale;
+        acc_y *= conf->scale;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-            conf->base_x -= STEP_X;
+        vel_x += acc_x;
+        vel_y += acc_y;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            conf->base_x += STEP_X;
+        conf->base_x += vel_x;
+        conf->base_y += vel_y;
+
+        vel_x *= K_DEC;
+        vel_y *= K_DEC;
 
         MandCalcAVX512(conf);
         // MandCalcNoOpts(conf);

@@ -3,12 +3,10 @@
 
 #include <stdint.h>
 
-const int32_t DEF_BASE_X     = 0;
-const int32_t DEF_BASE_Y     = 0;
-const int32_t STEP_X         = 10;
-const int32_t STEP_Y         = 10;
+const int32_t DEF_BASE_X     = -350;
+const int32_t DEF_BASE_Y     = -250;
 
-const float   DEF_SCALE      = 0.1;
+const float   DEF_SCALE      = 0.6;
 const float   DEF_TRANSF_RAD = 2.5;
 const float   DEF_R_MAX      = 10;
 
