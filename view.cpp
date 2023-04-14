@@ -35,6 +35,9 @@ void MandRun(MandConfig *conf)
     sf::Texture texture = {};
     sf::Sprite  sprite  = {};
 
+    sf::Clock clock     = {};
+    int32_t   frame_cnt = 0;
+
     float acc_x = 0,
           acc_y = 0;
 
@@ -95,16 +98,40 @@ void MandRun(MandConfig *conf)
         ++vel_scale;
         //==========================================
 
-        MandCalcAVX512(conf);
-        // MandCalcNoOpts(conf);
+        for (int32_t i = 0; i < ACCURANCY; ++i)
+            // MandCalcAVX512(conf);
+            MandCalcNoOpts(conf);
+
         MandGetImage(conf, &img);
 
         texture.loadFromImage(img);
         sprite.setTexture(texture);
 
+        float fps = GetFPS(&clock, &frame_cnt) * ACCURANCY;
+
+        char title[16] = "";
+        snprintf(title, sizeof(title), "%.2f", fps);
+        
+        window.setTitle(title);
         window.clear();
         window.draw(sprite);
         window.display();
     }
+}
+
+float GetFPS(sf::Clock *clock, int32_t *frame_cnt)
+{
+    ++*frame_cnt;
+
+    float curr_time = clock->getElapsedTime().asSeconds();
+    float fps       = (float) *frame_cnt / curr_time;
+
+    if (curr_time > 1.f || *frame_cnt == MAX_FRAME_CNT)
+    {
+        clock->restart();
+        *frame_cnt = 0;
+    }
+
+    return fps;
 }
 
