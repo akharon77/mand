@@ -4,14 +4,16 @@
 
 void MandTransfScale(MandConfig *conf, float k)
 {
-    conf->base_x  += conf->delta_x * conf->width  / 2 * (1 - k);
-    conf->base_y  += conf->delta_y * conf->height / 2 * (1 - k);
-
-    conf->delta_x *= k;
-    conf->delta_y *= k;
-
     if (conf->scale * k < 1 - EPS)
+    {
+        conf->base_x  += conf->delta_x * conf->width  / 2 * (1 - k);
+        conf->base_y  += conf->delta_y * conf->height / 2 * (1 - k);
+
+        conf->delta_x *= k;
+        conf->delta_y *= k;
+
         conf->scale *= k;
+    }
 }
 
 void MandCalcNoOpts(MandConfig *conf)
@@ -93,10 +95,12 @@ void MandCalcAVX512(MandConfig *conf)
     // float y0 = base_y;
     __m512 y0 = _mm512_set1_ps(base_y);
 
+    __m512 x0_base_x = _mm512_set1_ps(base_x);
+
     for (int32_t yi = 0; yi < height; ++yi, y0 = _mm512_add_ps(y0, delta_y_unif))
     {
         // float x0 = base_x;
-        __m512 x0 = _mm512_add_ps(_mm512_set1_ps(base_x), delta_x_it16);
+        __m512 x0 = _mm512_add_ps(x0_base_x, delta_x_it16);
 
         for (int32_t xi = 0; xi < width; xi += 16, x0 = _mm512_add_ps(x0, delta_x_unif))
         {
