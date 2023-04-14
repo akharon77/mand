@@ -3,7 +3,7 @@
 int main()
 {
     MandConfig conf = {};
-    MandConfigCtor(&conf, WIDTH, HEIGHT);
+    MandConfigCtor(&conf);
 
     MandRun(&conf);
 

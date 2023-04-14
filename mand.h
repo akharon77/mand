@@ -3,12 +3,19 @@
 
 #include <stdint.h>
 
-const int32_t DEF_BASE_X     = -100;
-const int32_t DEF_BASE_Y     = 800;
+const int32_t DEF_WIDTH   = 800;
+const int32_t DEF_HEIGHT  = 800;
 
-const float   DEF_SCALE      = 0.6;
-const float   DEF_TRANSF_RAD = 2.5;
-const float   DEF_R_MAX      = 10;
+const float  DEF_BASE_X     = -1.85;
+const float  DEF_BASE_Y     = -0.8;
+
+const float  DEF_SCALE      = 0.6;
+
+const float  DEF_DELTA_X    = 0.002;
+const float  DEF_DELTA_Y    = 0.002;
+
+const float  DEF_ = 2.5;
+const float  DEF_R_MAX      = 10;
 
 const uint32_t MAGIC = 0xDEADBEEF;
 
@@ -16,20 +23,21 @@ struct MandConfig
 {
     int32_t *cnt_arr;
 
-    int32_t base_x;
-    int32_t base_y;
+    float    base_x;
+    float    base_y;
 
-    int32_t width;
-    int32_t height;
+    int32_t  width;
+    int32_t  height;
 
-    float scale;
-    float x_transf_rad;
-    float y_transf_rad;
+    float    scale;
 
-    float r_max;
+    float    delta_x;
+    float    delta_y;
+
+    float    r_max;
 };
 
-void MandConfigCtor (MandConfig *conf, int32_t width, int32_t height);
+void MandConfigCtor (MandConfig *conf);
 void MandConfigDtor (MandConfig *conf);
 
 #endif  // MAND_H

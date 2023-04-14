@@ -9,7 +9,7 @@ const float EPS   = 1e-6;
 const float N_MAX = 255;
 
 void MandTransfCoordScale (const MandConfig *conf, float *x, float *y);
-void MandTransfCoord      (const MandConfig *conf, float *x, float *y);
+void MandTransfScale(MandConfig *conf, float k);
 
 void MandCalcNoOpts       (MandConfig *config);
 void MandCalcAVX512       (MandConfig *config);

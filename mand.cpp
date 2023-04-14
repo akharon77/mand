@@ -1,22 +1,24 @@
 #include <stdlib.h>
 
 #include "mand.h"
+#include "calc.h"
 
-void MandConfigCtor(MandConfig *conf, int32_t width, int32_t height)
+void MandConfigCtor(MandConfig *conf)
 {
-    conf->cnt_arr      = (int32_t*) calloc(width * height, sizeof(int32_t));
-
     conf->base_x       = DEF_BASE_X;
     conf->base_y       = DEF_BASE_Y;
 
-    conf->width        = width;
-    conf->height       = height;
-
     conf->scale        = DEF_SCALE;
-    conf->x_transf_rad = DEF_TRANSF_RAD;
-    conf->y_transf_rad = DEF_TRANSF_RAD;
+
+    conf->width        = DEF_WIDTH;
+    conf->height       = DEF_HEIGHT;
+
+    conf->cnt_arr      = (int32_t*) calloc(conf->width * conf->height, sizeof(int32_t));
 
     conf->r_max        = DEF_R_MAX;
+
+    conf->delta_x      = DEF_DELTA_X;
+    conf->delta_y      = DEF_DELTA_Y;
 }
 
 void MandConfigDtor(MandConfig *conf)

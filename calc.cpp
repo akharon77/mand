@@ -2,42 +2,30 @@
 
 #include "calc.h"
 
-void MandTransfCoordScale(const MandConfig *conf, float *x, float *y)
+void MandTransfScale(MandConfig *conf, float k)
 {
-    *x = *x / conf->width  * 2 * conf->x_transf_rad;
-    *y = *y / conf->height * 2 * conf->y_transf_rad;
-}
+    conf->base_x  += conf->delta_x * conf->width  / 2 * (1 - k);
+    conf->base_y  += conf->delta_y * conf->height / 2 * (1 - k);
 
-void MandTransfCoord(const MandConfig *conf, float *x, float *y)
-{
-    MandTransfCoordScale(conf, x, y);
+    conf->delta_x *= k;
+    conf->delta_y *= k;
 
-    *x = *x - conf->x_transf_rad;
-    *y = conf->y_transf_rad - *y;
+    if (conf->scale * k < 1 - EPS)
+        conf->scale *= k;
 }
 
 void MandCalcNoOpts(MandConfig *conf)
 {
     int32_t *cnt_arr = conf->cnt_arr;
 
-    float base_x = conf->base_x,
-          base_y = conf->base_y;
+    float    base_x  = conf->base_x,
+             base_y  = conf->base_y;
 
-    MandTransfCoord(conf, &base_x, &base_y);
+    float    delta_x = conf->delta_x,
+             delta_y = conf->delta_y;
 
-    float delta_x = 1,
-          delta_y = 1;
-
-    MandTransfCoordScale(conf, &delta_x, &delta_y);
-
-    delta_x *= conf->scale;
-    delta_y *= conf->scale;
-
-    base_x += conf->x_transf_rad * (1 - conf->scale);
-    base_y += conf->y_transf_rad * (1 - conf->scale);
-
-    int32_t width  = conf->width,
-            height = conf->height;
+    int32_t  width   = conf->width,
+             height  = conf->height;
 
     float r_max_sqr = conf->r_max * conf->r_max;
 
@@ -81,24 +69,14 @@ void MandCalcAVX512(MandConfig *conf)
 {
     int32_t *cnt_arr = conf->cnt_arr;
 
-    float base_x = conf->base_x,
-          base_y = conf->base_y;
+    float    base_x  = conf->base_x,
+             base_y  = conf->base_y;
 
-    MandTransfCoord(conf, &base_x, &base_y);
+    float    delta_x = conf->delta_x,
+             delta_y = conf->delta_y;
 
-    float delta_x = 1,
-          delta_y = 1;
-
-    MandTransfCoordScale(conf, &delta_x, &delta_y);
-
-    delta_x *= conf->scale;
-    delta_y *= conf->scale;
-
-    base_x += conf->x_transf_rad * (1 - conf->scale);
-    base_y += conf->y_transf_rad * (1 - conf->scale);
-
-    int32_t width  = conf->width,
-            height = conf->height;
+    int32_t  width   = conf->width,
+             height  = conf->height;
 
     // float r_max_sqr = config->r_max * config->r_max;
     __m512 r_max_sqr = _mm512_set1_ps(conf->r_max * conf->r_max);
