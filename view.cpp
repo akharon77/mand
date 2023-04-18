@@ -99,8 +99,11 @@ void MandRun(MandConfig *conf)
         //==========================================
 
         for (int32_t i = 0; i < ACCURANCY; ++i)
-            // MandCalcAVX512(conf);
+        #ifdef _OPTIMIZE
+            MandCalcAVX512(conf);
+        #else
             MandCalcNoOpts(conf);
+        #endif
 
         MandGetImage(conf, &img);
 

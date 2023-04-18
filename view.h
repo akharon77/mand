@@ -6,7 +6,12 @@
 #include "mand.h"
 
 const int32_t MAX_FRAME_CNT = 1000;
+
+#ifdef _MEASURE
 const int32_t ACCURANCY     = 100;
+#else
+const int32_t ACCURANCY     = 1;
+#endif
 
 const float   ACC_COORD     = 0.3;
 const float   ACC_SCALE     = 0.03;
