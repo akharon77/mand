@@ -83,9 +83,9 @@ __________________________________________
     vfmsub132ps     zmm1, zmm3, zmm1
     vaddps          zmm0, zmm0, zmm0
     vaddps          zmm0, zmm0, zmm6
-    vcmpps          k0,   zmm2, zmm7, 1
+    vcmpps            k0, zmm2, zmm7, 1
     vaddps          zmm1, zmm1, zmm5
-    vpmovm2d        zmm2, k0
+    vpmovm2d        zmm2,   k0
     vpaddd          zmm2, zmm2, zmm4
     vmovdqa64       zmm4, zmm2
 ```
